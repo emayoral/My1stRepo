@@ -1,0 +1,9 @@
+/var/www
+/var/wwwold/web/
+/var/wwwold/ftp/
+/var/wwwold/html/
+/root
+/etc/munin
+/etc/httpd/conf
+/etc/httpd/conf.d
+/var/backup/data/rpmlist.txt
