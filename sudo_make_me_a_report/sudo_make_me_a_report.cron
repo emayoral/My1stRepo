@@ -1,0 +1,2 @@
+# weekly reports
+30 23 * * 0	root	cd /root && /root/sudo_make_me_a_report.pl
