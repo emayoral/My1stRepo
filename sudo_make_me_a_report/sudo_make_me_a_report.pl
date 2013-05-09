@@ -38,7 +38,7 @@ while (<FILE>)
 	foreach  $msgline (@msglines)
 		{
 		#print "$msgline\n";
-		if ($msgline =~ /(NL|FC) \(GB\): Total: (\d+) Used: (\d+) Unavailable: (\d+) Free: (\d+) Pct Used: (\d+)%/)
+		if ($msgline =~ /(NL|FC) \(GB\): Total: ([\d\.]+) Used: ([\d\.]+) Unavailable: ([\d\.]+) Free: ([\d\.]+) Pct Used: ([\d\.]+)%/)
 			{
 			my $type = $1;
 			$totals{$type}{'total'} = $2;
@@ -110,7 +110,7 @@ while (<FILE>)
 		{
 		#print "$msgline\n";
 		                                  #Util(%)       Size       Used       Free       Snap      A-Sis   MetaData    VolSize   VolAlloc    VolUsed
-		if ($msgline =~ /(\w+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)/)
+		if ($msgline =~ /(\w+)\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)/)
 			{
 			my $aggr=$1;
 			$totals{$aggr}{'util'} = $2;
@@ -162,7 +162,7 @@ while (<FILE>)
 		#print "$msgline\n";
 		#Volume                       Status       Aggr    Reserve    Util(%)   Inode(%)   Size(GB)   Used(GB)   Free(GB)      DEDUP   Saved(%)  Saved(GB)        Schedule
 		#&green aqua                      online      aggr3       none         77          0       2500       1915        584        N/A          0          0             N/A
-		if ($msgline =~ /&\w+\s+(\w+)\s+\w+\s+(\w+)\s+(\w+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+.*/)
+		if ($msgline =~ /&\w+\s+(\w+)\s+\w+\s+(\w+)\s+(\w+)\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)\s+([\d\.]+)\s+.*/)
 			{
 			my $vol=$1;
 			$totals{$vol}{'aggr'} = $2;
