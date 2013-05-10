@@ -4,6 +4,20 @@ use strict;
 use MIME::Lite;
 use POSIX;
 
+
+my %volumetypes;
+
+open VOLTYPES, '<', 'volumetypes.csv' or die "Cannot open: $!";
+while (my $line = <VOLTYPES>) 
+	{
+	chomp $line;
+	my @array = split /,/, $line;
+	$volumetypes{$array[0]} = $array[1];
+	}
+	
+close VOLTYPES;
+#print Dumper(\%volumetypes);
+
 system('/usr/lib/hobbit/server/bin/bb 127.0.0.1 "hobbitdboard test=^3par-space  fields=hostname,msg" > 3par-space.txt') == 0  or die $!; 
 
 open CSV, ">", "your_report.csv" or die $!;
@@ -144,7 +158,7 @@ open FILE, "<", "na_vol_space.txt" or die $!;
 print CSV "'','','','','','','','','','','',''\n";
 print CSV "'Netapp volumes','','','','','','','','','','',''\n";
 print CSV "'','','','','','','','','','','',''\n";
-print CSV "'HostName','Volume','Util','Size','Used','Free','Snap','A-Sis','Metadata','VolSize','VolAlloc','VolUsed'\n";
+print CSV "'HostName','Volume','Aggr','Reserve','UtilPct','InodePct','Size','Used','Free','Type','','',''\n";
 
 while (<FILE>) 
 	{ 
@@ -172,6 +186,14 @@ while (<FILE>)
 			$totals{$vol}{'size'} = $6;
 			$totals{$vol}{'used'} = $7;
 			$totals{$vol}{'free'} = $8;
+			if (exists $volumetypes{$vol} )
+				{
+				$totals{$vol}{'type'} = $volumetypes{$vol};
+				}
+			else
+				{
+				$totals{$vol}{'type'} = 'UNKNOWN';
+				}
 			}
 		
 		}
@@ -179,7 +201,7 @@ while (<FILE>)
 	my $key;
 	foreach $key (sort(keys %totals)) 
 		{
-		print CSV "'$hostname','$key','$totals{$key}{'aggr'}','$totals{$key}{'reserve'}','$totals{$key}{'utilpct'}','$totals{$key}{'inodepct'}','$totals{$key}{'size'}','$totals{$key}{'used'}','$totals{$key}{'free'}','','',''\n";
+		print CSV "'$hostname','$key','$totals{$key}{'aggr'}','$totals{$key}{'reserve'}','$totals{$key}{'utilpct'}','$totals{$key}{'inodepct'}','$totals{$key}{'size'}','$totals{$key}{'used'}','$totals{$key}{'free'}','$totals{$key}{'type'}','','',''\n";
 		}
 
 	}
@@ -190,7 +212,7 @@ close CSV;
 
 
 my $msg = MIME::Lite->new(
-    From    => 'sudo_make_me_a_report@arsys.es',
+    From    => 'sudo_make_me_a_report@example.com',
     To      => 'xxx@example.com',
     Cc      => 'yyy@example.com',
     Subject => 'Informe de almacenamiento',
