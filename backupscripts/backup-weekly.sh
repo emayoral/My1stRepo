@@ -1,10 +1,16 @@
 #!/bin/bash
-# By Eduardo Mayoral (edu.mayoral@gmail.com) Orig. Dec 2012
-# Link on /etc/cron.daily/
+source $(dirname "$(realpath "$0")")/backup-config.sh
+exec 1>> ${LOG} 2>&1
+echo "[" $(date +'%F %T' ) "] Start weekly backup"
+# Lower priorities
+renice +10 -p $$
+ionice -c 2 -n 7 -p $$ -t 1>> ${LOG} 2>&1
+
 BACKUPPATH=/var/backup/data/
-BASENAME=XXXX
 OLDHOURS=350
-tar --absolute-names --files-from=/var/backup/scripts/filelist.txt --listed-incremental ${BACKUPPATH}weekly/${BASENAME}-backup-weekly-$(date +%Y%m%d).snar --lzma -cf ${BACKUPPATH}weekly/${BASENAME}-backup-weekly-$(date +%Y%m%d).tar.lzma
-rm -f ${BACKUPPATH}${BASENAME}-backup-current.snar
-ln -s ${BACKUPPATH}weekly/${BASENAME}-backup-weekly-$(date +%Y%m%d).snar ${BACKUPPATH}${BASENAME}-backup-current.snar 
+tar --files-from=/var/backup/scripts/filelist.txt --listed-incremental ${BACKUPPATH}weekly/${NAME}-backup-weekly-$(date +%Y%m%d).snar --lzma -cf ${BACKUPPATH}weekly/${NAME}-backup-weekly-$(date +%Y%m%d).tar.lzma
+rm -f ${BACKUPPATH}${NAME}-backup-current.snar
+ln -s ${BACKUPPATH}weekly/${NAME}-backup-weekly-$(date +%Y%m%d).snar ${BACKUPPATH}${NAME}-backup-current.snar 
 tmpwatch -m ${OLDHOURS} ${BACKUPPATH}/weekly
+echo "[" $(date +'%F %T' ) "] End weekly backup"
+
